@@ -7,6 +7,9 @@ public class Draw : MonoBehaviour {
 	public Transform brush;
 	public float brushSize = 100f;
 
+	public Transform imageTarget1;
+	public Transform imageTarget2;
+
 	private Vector3 brushSizeVector;
 
 	void Start () {
@@ -15,14 +18,17 @@ public class Draw : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		paintByMouse ();
-		paintByTouch ();
+		paintByMouse (imageTarget1);
+		paintByTouch (imageTarget1);
+
+		paintByMouse (imageTarget2);
+		paintByTouch (imageTarget2);
 	
 	}
 
-	private void paintByTouch() {
+	private void paintByTouch(Transform imageTarget) {
 		foreach (Touch touch in Input.touches) {
-			Vector3 touchIntersection = getPlaneIntersectionForScreenPoint (touch.position);
+			Vector3 touchIntersection = getPlaneIntersectionForScreenPoint (touch.position, imageTarget);
 			moveBrush (touchIntersection);
 			if (touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved) {
 				paintAtBrushLocation ();
@@ -30,17 +36,17 @@ public class Draw : MonoBehaviour {
 		}
 	}
 
-	private void paintByMouse() {
+	private void paintByMouse(Transform imageTarget) {
 		Vector3 mouseIntersection;
-		mouseIntersection = getPlaneIntersectionForScreenPoint (Input.mousePosition);
+		mouseIntersection = getPlaneIntersectionForScreenPoint (Input.mousePosition, imageTarget);
 
 		moveBrush(mouseIntersection);
 		paintOnClick ();
 	}
 
-	private Vector3 getPlaneIntersectionForScreenPoint(Vector3 screenPoint) {
+	private Vector3 getPlaneIntersectionForScreenPoint(Vector3 screenPoint, Transform imageTarget) {
 
-		Transform imageTarget = GameObject.Find ("ImageTarget").transform;
+//		Transform imageTarget = GameObject.Find ("ImageTarget Topgun").transform;
 	
 		Vector3 planeCenter = imageTarget.position;
 		Vector3 planeNormal = imageTarget.up;
