@@ -30,8 +30,9 @@ public class DragObject : MonoBehaviour {
 
 //		Vector3 camToPlane =  imageTarget.position - camera.position;
 		Vector3 camToPlane =  camera.position - imageTarget.position;
-		Vector3 planeNormal = camToPlane.normalized;
+//		Vector3 planeNormal = camToPlane.normalized;
 		Vector3 planeCenter = imageTarget.position;
+		Vector3 planeNormal = imageTarget.up;
 
 
 //		Vector3 planeNormal = transform.up;
