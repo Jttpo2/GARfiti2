@@ -3,7 +3,7 @@ using System.Collections;
 
 public class BluePaint : MonoBehaviour {
 
-	public GameObject target;
+	private GameObject target;
 
 	// Use this for initialization
 	void Start () {

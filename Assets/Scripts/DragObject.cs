@@ -28,8 +28,8 @@ public class DragObject : MonoBehaviour {
 		Transform imageTarget = GameObject.Find ("ImageTarget").transform;
 		Transform camera = transform;
 
-		Vector3 camToPlane =  imageTarget.position - camera.position;
-//		Vector3 camToPlane =  camera.position - imageTarget.position;
+//		Vector3 camToPlane =  imageTarget.position - camera.position;
+		Vector3 camToPlane =  camera.position - imageTarget.position;
 		Vector3 planeNormal = camToPlane.normalized;
 		Vector3 planeCenter = imageTarget.position;
 
@@ -51,13 +51,13 @@ public class DragObject : MonoBehaviour {
 	
 		if (Input.GetMouseButton(LEFT_BUTTON)) {
 			Debug.DrawLine(mousePos, planePoint, Color.red, 20f, false);
-			moveBlueTo (planePoint);
+			moveBrush (planePoint);
 		}
 
 	}
 
-	private void moveBlueTo(Vector3 position) {
-		Transform blue = GameObject.Find ("Blue").transform;
+	private void moveBrush(Vector3 position) {
+		Transform blue = GameObject.Find ("Brush").transform;
 		blue.position = position;
 	}
 
