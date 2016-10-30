@@ -16,9 +16,18 @@ public class Draw : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		paintByMouse ();
-
-//		Vector3 touchIntersection = getPlaneIntersectionForScreenPoint()
+		paintByTouch ();
 	
+	}
+
+	private void paintByTouch() {
+		foreach (Touch touch in Input.touches) {
+			Vector3 touchIntersection = getPlaneIntersectionForScreenPoint (touch.position);
+			moveBrush (touchIntersection);
+			if (touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved) {
+				paintAtBrushLocation ();
+			}
+		}
 	}
 
 	private void paintByMouse() {
@@ -32,7 +41,6 @@ public class Draw : MonoBehaviour {
 	private Vector3 getPlaneIntersectionForScreenPoint(Vector3 screenPoint) {
 
 		Transform imageTarget = GameObject.Find ("ImageTarget").transform;
-		Transform camera = transform;
 	
 		Vector3 planeCenter = imageTarget.position;
 		Vector3 planeNormal = imageTarget.up;
