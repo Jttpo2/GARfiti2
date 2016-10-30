@@ -28,9 +28,9 @@ public class DragObject : MonoBehaviour {
 		Transform imageTarget = GameObject.Find ("ImageTarget").transform;
 		Transform camera = transform;
 
-//		Vector3 camToPlane =  imageTarget.position - camera.position;
-		Vector3 camToPlane =  camera.position - imageTarget.position;
-		Vector3 planeNormal = camToPlane;
+		Vector3 camToPlane =  imageTarget.position - camera.position;
+//		Vector3 camToPlane =  camera.position - imageTarget.position;
+		Vector3 planeNormal = camToPlane.normalized;
 		Vector3 planeCenter = imageTarget.position;
 
 
@@ -38,9 +38,7 @@ public class DragObject : MonoBehaviour {
 //		Vector3 planeCenter = transform.position;
 		Plane targetPlane = new Plane(planeNormal, planeCenter);
 
-		DrawPlane (planeCenter, planeNormal);
-		//message.text = "";
-//		foreach (Touch touch in Input.touches) {
+		DrawPlane (planeNormal, planeCenter);
 			
 		//Gets the ray at position where the screen is touched
 			Ray ray = Camera.main.ScreenPointToRay(mousePos);
@@ -50,44 +48,11 @@ public class DragObject : MonoBehaviour {
 			targetPlane.Raycast(ray, out dist);
 			//Returns point dist along the ray.
 			Vector3 planePoint = ray.GetPoint(dist);
-			//Debug.Log("Point=" + planePoint);
-			//True if finger touch began. If ray intersects collider, set pickedObject to transform of collider object
-		if (Input.GetMouseButtonDown(LEFT_BUTTON)) {
-				//Struct used to get info back from a raycast
-				RaycastHit hit = new RaycastHit();
-				if (Physics.Raycast(ray, out hit, 1000)) { //True when Ray intersects colider. If true, hit contains additional info about where collider was hit
-					print("Ray hit target");
-					pickedObject = hit.transform;
-					lastPlanePoint = planePoint;
-				} else {
-					pickedObject = null;
-				}
-
-				// Draw ray
-//				Debug.DrawLine(touch.position, Vector3.zero, Color.red, 2f);
-
-
-				//Move Object when finger moves after object selected.
-//		} else 
-		} else if (Input.GetMouseButton(LEFT_BUTTON)) {
-				if (pickedObject != null) {
-				
-					
-				pickedObject.position += (planePoint - lastPlanePoint) * 1;
-					lastPlanePoint = planePoint;
-				}
-//			print("Moving target " + pickedObject.position);
-		Debug.DrawLine(mousePos, planePoint, Color.red, 10f, false);
-//			Debug.DrawRay(mousePos, planePoint, Color.green, 10f);
-
-				//Set pickedObject to null after touch ends.
-		} else if (Input.GetMouseButtonUp(LEFT_BUTTON) ) {
-				print("Letting target go");
-				pickedObject = null;
+	
+		if (Input.GetMouseButton(LEFT_BUTTON)) {
+			Debug.DrawLine(mousePos, planePoint, Color.red, 20f, false);
+			moveBlueTo (planePoint);
 		}
-
-		moveBlueTo (planePoint);
-
 
 	}
 
@@ -140,7 +105,7 @@ public class DragObject : MonoBehaviour {
 		}
 	}
 
-	public static void DrawPlane(Vector3 position, Vector3 normal ) {
+	public static void DrawPlane(Vector3 normal, Vector3 position) {
 
 		Vector3 v3; 
 
