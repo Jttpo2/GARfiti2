@@ -24,7 +24,21 @@ public class DragObject : MonoBehaviour {
 //		sphere.transform.position = mousePos;
 
 		Vector3 mousePos = Input.mousePosition;
-		Plane targetPlane = new Plane(transform.up, transform.position);
+
+		Transform imageTarget = GameObject.Find ("ImageTarget").transform;
+		Transform camera = transform;
+
+//		Vector3 camToPlane =  imageTarget.position - camera.position;
+		Vector3 camToPlane =  camera.position - imageTarget.position;
+		Vector3 planeNormal = camToPlane;
+		Vector3 planeCenter = imageTarget.position;
+
+
+//		Vector3 planeNormal = transform.up;
+//		Vector3 planeCenter = transform.position;
+		Plane targetPlane = new Plane(planeNormal, planeCenter);
+
+		DrawPlane (planeCenter, planeNormal);
 		//message.text = "";
 //		foreach (Touch touch in Input.touches) {
 			
@@ -59,11 +73,12 @@ public class DragObject : MonoBehaviour {
 				if (pickedObject != null) {
 				
 					
-				pickedObject.position += planePoint - lastPlanePoint;
+				pickedObject.position += (planePoint - lastPlanePoint) * 1;
 					lastPlanePoint = planePoint;
 				}
-			print("Moving target " + pickedObject.position);
-			Debug.DrawLine(mousePos, planePoint, Color.red, 2f, false);
+//			print("Moving target " + pickedObject.position);
+		Debug.DrawLine(mousePos, planePoint, Color.red, 10f, false);
+//			Debug.DrawRay(mousePos, planePoint, Color.green, 10f);
 
 				//Set pickedObject to null after touch ends.
 		} else if (Input.GetMouseButtonUp(LEFT_BUTTON) ) {
@@ -71,7 +86,16 @@ public class DragObject : MonoBehaviour {
 				pickedObject = null;
 		}
 
+		moveBlueTo (planePoint);
+
+
 	}
+
+	private void moveBlueTo(Vector3 position) {
+		Transform blue = GameObject.Find ("Blue").transform;
+		blue.position = position;
+	}
+
 
 	private void dragByTouch() {
 		Plane targetPlane = new Plane(transform.up, transform.position);
@@ -114,5 +138,31 @@ public class DragObject : MonoBehaviour {
 				pickedObject = null;
 			}
 		}
+	}
+
+	public static void DrawPlane(Vector3 position, Vector3 normal ) {
+
+		Vector3 v3; 
+
+		if (normal.normalized != Vector3.forward)
+			v3 = Vector3.Cross(normal, Vector3.forward).normalized * normal.magnitude;
+		else
+			v3 = Vector3.Cross(normal, Vector3.up).normalized * normal.magnitude;;
+
+		v3 *= 100f;
+		var corner0 = position + v3;
+		var corner2 = position - v3;
+		var q = Quaternion.AngleAxis(90.0f, normal);
+		v3 = q * v3;
+		var corner1 = position + v3;
+		var corner3 = position - v3;
+
+		Debug.DrawLine(corner0, corner2, Color.green);
+		Debug.DrawLine(corner1, corner3, Color.green);
+		Debug.DrawLine(corner0, corner1, Color.green);
+		Debug.DrawLine(corner1, corner2, Color.green);
+		Debug.DrawLine(corner2, corner3, Color.green);
+		Debug.DrawLine(corner3, corner0, Color.green);
+		Debug.DrawRay(position, normal, Color.red);
 	}
 }
