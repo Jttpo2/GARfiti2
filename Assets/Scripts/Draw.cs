@@ -8,8 +8,10 @@ public class Draw : MonoBehaviour
 
 	private const int LEFT_BUTTON = 0;
 
+	public GameObject brushContainer;
 	public Transform brush;
 	public float brushSize = 100f;
+
 
 	//	public Transform imageTarget1;
 	//	public Transform imageTarget2;
@@ -21,7 +23,7 @@ public class Draw : MonoBehaviour
 	void Start ()
 	{
 		imageTargets = getImageTargets ();
-		brushSizeVector = new Vector3 (brushSize, brushSize, brushSize);
+		brushSizeVector = Vector3.one * brushSize;
 	}
 
 	// Update is called once per frame
@@ -96,11 +98,10 @@ public class Draw : MonoBehaviour
 
 	private void paintAtBrushLocation ()
 	{
-		Object obj = Instantiate (brush, brush.position, transform.rotation);
-		if (obj is Transform) {
-			Transform paintDot = (Transform)obj;
-			paintDot.localScale += brushSizeVector;
-		}
+		Transform paintDot = (Transform)Instantiate (brush, brush.position, transform.rotation);
+		paintDot.parent = brushContainer.transform;
+		paintDot.localScale += brushSizeVector;
+
 	}
 
 	public static void DrawPlane (Vector3 normal, Vector3 position)
