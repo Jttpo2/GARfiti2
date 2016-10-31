@@ -102,12 +102,16 @@ public class TexturePainter : MonoBehaviour
 			uvWorldPosition.x = pixelUV.x - canvasCam.orthographicSize;//To center the UV on X
 			uvWorldPosition.y = pixelUV.y - canvasCam.orthographicSize;//To center the UV on Y
 			uvWorldPosition.z = 0.0f;
+			Debug.Log ("Position hit: " + uvWorldPosition);
 			return true;
 		} else {		
 			return false;
 		}
 		
 	}
+
+
+
 	//Sets the base material with a our canvas texture, then removes all our brushes
 	void SaveTexture ()
 	{		
