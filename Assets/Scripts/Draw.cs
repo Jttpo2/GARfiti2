@@ -10,11 +10,7 @@ public class Draw : MonoBehaviour
 
 	public GameObject brushContainer;
 	public Transform brush;
-	public float brushSize = 100f;
-
-
-	//	public Transform imageTarget1;
-	//	public Transform imageTarget2;
+	public float brushSize;
 
 	private Transform[] imageTargets;
 
