@@ -101,7 +101,6 @@ public class TexturePainter : MonoBehaviour
 		RaycastHit hit;
 		// Input.mousePosition() works for one finger touch input as well
 		Vector3 cursorPos = new Vector3 (Input.mousePosition.x, Input.mousePosition.y, 0.0f);
-//		Vector3 cursorPos = getInputPosition ();
 		Ray cursorRay = sceneCamera.ScreenPointToRay (cursorPos);
 		if (Physics.Raycast (cursorRay, out hit, 200)) {
 			MeshCollider meshCollider = hit.collider as MeshCollider;
@@ -118,30 +117,6 @@ public class TexturePainter : MonoBehaviour
 		}
 		
 	}
-
-	//	private Vector3 getInputPosition ()
-	//	{
-	//		Vector3 touchPosition = getTouchPosition ();
-	//		if (touchPosition != Vector3.zero) {
-	//			return touchPosition;
-	//		} else {
-	//			return new Vector3 (Input.mousePosition.x, Input.mousePosition.y, 0.0f);
-	//		}
-	//	}
-	//
-	//	private Vector3 getTouchPosition ()
-	//	{
-	//		foreach (Touch touch in Input.touches) {
-	//			if (touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary) {
-	//				// Return first touch found
-	//				return new Vector3 (touch.position.x, touch.position.y, 0.0f);
-	//			}
-	//		}
-	//		return Vector3.zero;
-	//
-	//	}
-
-
 
 	//Sets the base material with a our canvas texture, then removes all our brushes
 	void SaveTexture ()
