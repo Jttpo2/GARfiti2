@@ -17,6 +17,8 @@ public enum Painter_BrushMode
 
 public class TexturePainter : MonoBehaviour
 {
+	
+
 	public GameObject brushCursor, brushContainer;
 	//The cursor that overlaps the model and our container for the brushes painted
 	public Camera sceneCamera, canvasCam;
@@ -47,7 +49,11 @@ public class TexturePainter : MonoBehaviour
 		if (Input.GetMouseButton (0)) {
 			DoAction ();
 		}
-		UpdateBrushCursor ();
+	
+		if (Constants.compilingForDesktop ()) {
+			UpdateBrushCursor ();	
+		}
+	
 	}
 
 	//The main action, instantiates a brush or decal entity at the clicked position on the UV map
@@ -80,6 +86,7 @@ public class TexturePainter : MonoBehaviour
 	//To update at realtime the painting cursor on the mesh
 	void UpdateBrushCursor ()
 	{
+
 		Vector3 uvWorldPosition = Vector3.zero;
 		if (HitTestUVPosition (ref uvWorldPosition) && !saving) {
 			brushCursor.SetActive (true);
@@ -92,7 +99,8 @@ public class TexturePainter : MonoBehaviour
 	bool HitTestUVPosition (ref Vector3 uvWorldPosition)
 	{
 		RaycastHit hit;
-		Vector3 cursorPos = new Vector3 (Input.mousePosition.x, Input.mousePosition.y, 0.0f);
+//		Vector3 cursorPos = new Vector3 (Input.mousePosition.x, Input.mousePosition.y, 0.0f);
+		Vector3 cursorPos = getInputPosition ();
 		Ray cursorRay = sceneCamera.ScreenPointToRay (cursorPos);
 		if (Physics.Raycast (cursorRay, out hit, 200)) {
 			MeshCollider meshCollider = hit.collider as MeshCollider;
@@ -102,12 +110,34 @@ public class TexturePainter : MonoBehaviour
 			uvWorldPosition.x = pixelUV.x - canvasCam.orthographicSize;//To center the UV on X
 			uvWorldPosition.y = pixelUV.y - canvasCam.orthographicSize;//To center the UV on Y
 			uvWorldPosition.z = 0.0f;
-			Debug.Log ("Position hit: " + uvWorldPosition);
+//			Debug.Log ("Position hit: " + uvWorldPosition);
 			return true;
 		} else {		
 			return false;
 		}
 		
+	}
+
+	private Vector3 getInputPosition ()
+	{
+		Vector3 touchPosition = getTouchPosition ();
+		if (touchPosition != Vector3.zero) {
+			return touchPosition;
+		} else {
+			return new Vector3 (Input.mousePosition.x, Input.mousePosition.y, 0.0f);	
+		}
+	}
+
+	private Vector3 getTouchPosition ()
+	{
+		foreach (Touch touch in Input.touches) {
+			if (touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary) {
+				// Return first touch found
+				return new Vector3 (touch.position.x, touch.position.y, 0.0f);
+			} 
+		}
+		return Vector3.zero;
+
 	}
 
 
