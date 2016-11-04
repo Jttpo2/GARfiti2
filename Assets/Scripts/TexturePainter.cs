@@ -106,17 +106,47 @@ public class TexturePainter : MonoBehaviour
 			MeshCollider meshCollider = hit.collider as MeshCollider;
 			if (meshCollider == null || meshCollider.sharedMesh == null)
 				return false;			
-			Vector2 pixelUV = new Vector2 (hit.textureCoord.x, hit.textureCoord.y);
-			uvWorldPosition.x = pixelUV.x - canvasCam.orthographicSize;//To center the UV on X
-			uvWorldPosition.y = pixelUV.y - canvasCam.orthographicSize;//To center the UV on Y
-			uvWorldPosition.z = 0.0f;
+			Vector2 pixelUV = hit.textureCoord;
+//			uvWorldPosition.x = pixelUV.x - canvasCam.orthographicSize;//To center the UV on X
+//			uvWorldPosition.y = pixelUV.y - canvasCam.orthographicSize;//To center the UV on Y
+//			uvWorldPosition.z = 0.0f;
+
+//			uvWorldPosition.x = pixelUV.x;
+//			uvWorldPosition.y = pixelUV.y;
+//			uvWorldPosition.z = 0.0f;
 //			Debug.Log ("Position hit: " + uvWorldPosition);
+
+
+
+			uvWorldPosition.x = (pixelUV.x - canvasCam.orthographicSize / 4) * Mathf.Pow (canvasCam.orthographicSize, 2);//To center the UV on X
+			uvWorldPosition.y = (pixelUV.y - canvasCam.orthographicSize / 4) * Mathf.Pow (canvasCam.orthographicSize, 2);//To center the UV on Y
+//			uvWorldPosition.x = (pixelUV.x - canvasCam.orthographicSize / 2) * Mathf.Pow (canvasCam.orthographicSize, 2);//To center the UV on X
+
+			uvWorldPosition.z = 0.0f;
+
+			// Map to texture 
+//			Renderer rend = hit.transform.GetComponent<Renderer> ();
+////			MeshCollider meshCollider = hit.collider as MeshCollider;
+//			if (rend == null || rend.sharedMaterial == null || rend.sharedMaterial.mainTexture == null || meshCollider == null)
+//				return false;
+//
+//			Texture2D tex = rend.material.mainTexture as Texture2D;
+//			pixelUV.x *= tex.width;
+//			pixelUV.y *= tex.height;
+////			tex.SetPixel((int)pixelUV.x, (int)pixelUV.y, Color.black);
+////			tex.Apply();
+//
+//			uvWorldPosition.x = pixelUV.x;
+//			uvWorldPosition.y = pixelUV.y;
+
 			return true;
 		} else {		
 			return false;
 		}
 		
 	}
+
+
 
 	//Sets the base material with a our canvas texture, then removes all our brushes
 	void SaveTexture ()
