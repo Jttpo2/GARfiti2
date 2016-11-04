@@ -44,6 +44,12 @@ public class TexturePainter : MonoBehaviour
 	string brushFileLocation = "TexturePainter-Instances/BrushEntity";
 	const float BRUSH_SCALER = 10.0f;
 
+	void Start ()
+	{
+		Slider sizeSlider = GameObject.Find ("SliderSize").GetComponent <Slider> ();
+		brushSize = sizeSlider.value;
+	}
+
 	void Update ()
 	{
 		brushColor = ColorSelector.GetColor ();	//Updates our painted color with the selected color
@@ -103,7 +109,7 @@ public class TexturePainter : MonoBehaviour
 		// Input.mousePosition() works for one finger touch input as well
 		Vector3 cursorPos = new Vector3 (Input.mousePosition.x, Input.mousePosition.y, 0.0f);
 		Ray cursorRay = sceneCamera.ScreenPointToRay (cursorPos);
-		if (Physics.Raycast (cursorRay, out hit, 200)) {
+		if (Physics.Raycast (cursorRay, out hit, 400)) {
 			MeshCollider meshCollider = hit.collider as MeshCollider;
 			if (meshCollider == null || meshCollider.sharedMesh == null)
 				return false;			
@@ -158,7 +164,7 @@ public class TexturePainter : MonoBehaviour
 	public void SetBrushSize (float newBrushSize)
 	{ //Sets the size of the cursor brush or decal
 		brushSize = newBrushSize;
-		brushCursor.transform.localScale = Vector3.one * brushSize;
+		brushCursor.transform.localScale = Vector3.one * brushSize * BRUSH_SCALER;
 	}
 
 	////////////////// OPTIONAL METHODS //////////////////
