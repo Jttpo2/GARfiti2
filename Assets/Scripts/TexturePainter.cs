@@ -42,6 +42,7 @@ public class TexturePainter : MonoBehaviour
 	//Flag to check if we are saving the texture
 
 	string brushFileLocation = "TexturePainter-Instances/BrushEntity";
+	const float BRUSH_SCALER = 10.0f;
 
 	void Update ()
 	{
@@ -70,10 +71,10 @@ public class TexturePainter : MonoBehaviour
 			} else {
 				brushObj = (GameObject)Instantiate (Resources.Load ("TexturePainter-Instances/DecalEntity")); //Paint a decal
 			}
-			brushColor.a = brushSize * 2.0f; // Brushes have alpha to have a merging effect when painted over.
+			brushColor.a = brushSize * 2.0f * BRUSH_SCALER; // Brushes have alpha to have a merging effect when painted over.
 			brushObj.transform.parent = brushContainer.transform; //Add the brush to our container to be wiped later
 			brushObj.transform.localPosition = uvWorldPosition; //The position of the brush (in the UVMap)
-			brushObj.transform.localScale = Vector3.one * brushSize;//The size of the brush
+			brushObj.transform.localScale = Vector3.one * brushSize * BRUSH_SCALER;//The size of the brush
 		}
 		brushCounter++; //Add to the max brushes
 		if (brushCounter >= MAX_BRUSH_COUNT) { //If we reach the max brushes available, flatten the texture and clear the brushes
@@ -111,8 +112,9 @@ public class TexturePainter : MonoBehaviour
 			float sizeCorrection = canvasCam.orthographicSize * 2;
 			uvWorldPosition.x = (pixelUV.x - canvasCam.orthographicSize / sizeCorrection);//To center the UV on X
 			uvWorldPosition.y = (pixelUV.y - canvasCam.orthographicSize / sizeCorrection);//To center the UV on Y
-			uvWorldPosition.x *= Mathf.Pow (canvasCam.orthographicSize, 2); // Map to camera size
-			uvWorldPosition.y *= Mathf.Pow (canvasCam.orthographicSize, 2); // Map to camera size
+
+			uvWorldPosition.x *= canvasCam.orthographicSize * 2; // Map to camera size
+			uvWorldPosition.y *= canvasCam.orthographicSize * 2; // Map to camera size
 
 			uvWorldPosition.z = 0.0f;
 
