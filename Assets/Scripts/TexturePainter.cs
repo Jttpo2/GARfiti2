@@ -42,7 +42,7 @@ public class TexturePainter : MonoBehaviour
 	//Flag to check if we are saving the texture
 
 	string brushFileLocation = "TexturePainter-Instances/BrushEntity";
-	const float BRUSH_SCALER = 10.0f;
+	const float BRUSH_SCALER = 1.0f;
 
 	void Start ()
 	{
@@ -80,7 +80,8 @@ public class TexturePainter : MonoBehaviour
 			brushColor.a = brushSize * 2.0f * BRUSH_SCALER; // Brushes have alpha to have a merging effect when painted over.
 			brushObj.transform.parent = brushContainer.transform; //Add the brush to our container to be wiped later
 			brushObj.transform.localPosition = uvWorldPosition; //The position of the brush (in the UVMap)
-			brushObj.transform.localScale = Vector3.one * brushSize * BRUSH_SCALER;//The size of the brush
+			brushObj.transform.localScale = Vector3.one * brushSize;//The size of the brush
+			brushObj.transform.localScale *= (-1 * uvWorldPosition.z) * BRUSH_SCALER; // Scale with distance to canvas
 		}
 		brushCounter++; //Add to the max brushes
 		if (brushCounter >= MAX_BRUSH_COUNT) { //If we reach the max brushes available, flatten the texture and clear the brushes
@@ -102,6 +103,8 @@ public class TexturePainter : MonoBehaviour
 			brushCursor.SetActive (false);
 		}		
 	}
+
+
 	//Returns the position on the texuremap according to a hit in the mesh collider
 	bool HitTestUVPosition (ref Vector3 uvWorldPosition)
 	{
@@ -122,7 +125,10 @@ public class TexturePainter : MonoBehaviour
 			uvWorldPosition.x *= canvasCam.orthographicSize * 2; // Map to camera size
 			uvWorldPosition.y *= canvasCam.orthographicSize * 2; // Map to camera size
 
-			uvWorldPosition.z = 0.0f;
+//			uvWorldPosition.z = 0.0f;
+			// Distance between camera and ray hit on canvas
+			// dividing by 10 to scale distance down a bit
+			uvWorldPosition.z = -1 * (hit.transform.position - sceneCamera.transform.position).magnitude / 10;
 
 			return true;
 		} else {		
@@ -164,7 +170,7 @@ public class TexturePainter : MonoBehaviour
 	public void SetBrushSize (float newBrushSize)
 	{ //Sets the size of the cursor brush or decal
 		brushSize = newBrushSize;
-		brushCursor.transform.localScale = Vector3.one * brushSize * BRUSH_SCALER;
+		brushCursor.transform.localScale = Vector3.one * brushSize;
 	}
 
 	////////////////// OPTIONAL METHODS //////////////////
