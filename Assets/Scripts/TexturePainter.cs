@@ -76,6 +76,7 @@ public class TexturePainter : MonoBehaviour
 			brushObj.transform.localPosition = uvWorldPosition; //The position of the brush (in the UVMap)
 			brushObj.transform.localScale = Vector3.one * brushSize;//The size of the brush
 			brushObj.transform.localScale *= (-1 * uvWorldPosition.z) * BRUSH_SCALER; // Scale with distance to canvas
+			brushObj.transform.localPosition = new Vector3 (brushObj.transform.localPosition.x, brushObj.transform.localPosition.y, 0.0f); // Flatten positions to enable overpainting
 		}
 		brushCounter++; //Add to the max brushes
 		if (brushCounter >= MAX_BRUSH_COUNT) { //If we reach the max brushes available, flatten the texture and clear the brushes
