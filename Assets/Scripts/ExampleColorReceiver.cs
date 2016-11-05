@@ -12,9 +12,9 @@ public class ExampleColorReceiver : MonoBehaviour
 
 	void OnGUI ()
 	{
-//		var r = Camera.main.pixelRect;
-//		var rect = new Rect(r.center.x + r.height / 6 + 50, r.center.y, 100, 100);
-//		GUI.Label (rect, "#" + ToHex(color.r) + ToHex(color.g) + ToHex(color.b));	
+		var r = Camera.main.pixelRect;
+		var rect = new Rect (r.center.x + r.height / 6 + 50, r.center.y, 100, 100);
+		GUI.Label (rect, "#" + ToHex (color.r) + ToHex (color.g) + ToHex (color.b));	
 	}
 
 	string ToHex (float n)

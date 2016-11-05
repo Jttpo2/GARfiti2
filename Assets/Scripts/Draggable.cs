@@ -7,11 +7,13 @@ public class Draggable : MonoBehaviour
 	public Transform thumb;
 	bool dragging;
 
+	public Camera cam;
+
 	void Update ()
 	{
 		if (Input.GetMouseButtonDown (0)) {
 			dragging = false;
-			var ray = Camera.main.ScreenPointToRay (Input.mousePosition);
+			var ray = cam.ScreenPointToRay (Input.mousePosition);
 			RaycastHit hit;
 			if (GetComponent<Collider> ().Raycast (ray, out hit, 100)) {
 				dragging = true;
@@ -20,7 +22,7 @@ public class Draggable : MonoBehaviour
 		if (Input.GetMouseButtonUp (0))
 			dragging = false;
 		if (dragging && Input.GetMouseButton (0)) {
-			var point = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+			var point = cam.ScreenToWorldPoint (Input.mousePosition);
 			point = GetComponent<Collider> ().ClosestPointOnBounds (point);
 			SetThumbPosition (point);
 			SendMessage ("OnDrag", Vector3.one - (thumb.position - GetComponent<Collider> ().bounds.min) / GetComponent<Collider> ().bounds.size.x);
