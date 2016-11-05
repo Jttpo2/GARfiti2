@@ -9,12 +9,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
-public enum Painter_BrushMode
-{
-	PAINT,
-	DECAL}
-;
-
 public class TexturePainter : MonoBehaviour
 {
 	
@@ -23,15 +17,13 @@ public class TexturePainter : MonoBehaviour
 	//The cursor that overlaps the model and our container for the brushes painted
 	public Camera sceneCamera, canvasCam;
 	//The camera that looks at the model, and the camera that looks at the canvas.
-	public Sprite cursorPaint, cursorDecal;
+	public Sprite cursorPaint;
 	// Cursor for the differen functions
 	public RenderTexture canvasTexture;
 	// Render Texture that looks at our Base Texture and the painted brushes
 	public Material baseMaterial;
 	// The material of our base texture (Were we will save the painted texture)
 
-	Painter_BrushMode mode;
-	//Our painter mode (Paint brushes or decals)
 	float brushSize = 1.0f;
 	// Set on init by slider
 	//The size of our brush
@@ -72,12 +64,10 @@ public class TexturePainter : MonoBehaviour
 		Vector3 uvWorldPosition = Vector3.zero;		
 		if (HitTestUVPosition (ref uvWorldPosition)) {
 			GameObject brushObj;
-			if (mode == Painter_BrushMode.PAINT) {
-				brushObj = (GameObject)Instantiate (Resources.Load (brushFileLocation)); //Paint a brush
-				brushObj.GetComponent<SpriteRenderer> ().color = brushColor; //Set the brush color
-			} else {
-				brushObj = (GameObject)Instantiate (Resources.Load ("TexturePainter-Instances/DecalEntity")); //Paint a decal
-			}
+
+			brushObj = (GameObject)Instantiate (Resources.Load (brushFileLocation)); //Paint a brush
+			brushObj.GetComponent<SpriteRenderer> ().color = brushColor; //Set the brush color
+
 			brushColor.a = brushSize * 2.0f * BRUSH_SCALER; // Brushes have alpha to have a merging effect when painted over.
 			brushObj.transform.parent = brushContainer.transform; //Add the brush to our container to be wiped later
 			brushObj.transform.localPosition = uvWorldPosition; //The position of the brush (in the UVMap)
@@ -161,12 +151,6 @@ public class TexturePainter : MonoBehaviour
 	}
 
 	////////////////// PUBLIC METHODS //////////////////
-
-	public void SetBrushMode (Painter_BrushMode brushMode)
-	{ //Sets if we are painting or placing decals
-		mode = brushMode;
-		brushCursor.GetComponent<SpriteRenderer> ().sprite = brushMode == Painter_BrushMode.PAINT ? cursorPaint : cursorDecal;
-	}
 
 	public void SetBrushSize (float newBrushSize)
 	{ //Sets the size of the cursor brush or decal
