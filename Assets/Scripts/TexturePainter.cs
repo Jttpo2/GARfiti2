@@ -33,6 +33,7 @@ public class TexturePainter : MonoBehaviour
 	Painter_BrushMode mode;
 	//Our painter mode (Paint brushes or decals)
 	float brushSize = 1.0f;
+	// Set on init by slider
 	//The size of our brush
 	Color brushColor;
 	//The selected color
@@ -127,8 +128,8 @@ public class TexturePainter : MonoBehaviour
 
 //			uvWorldPosition.z = 0.0f;
 			// Distance between camera and ray hit on canvas
-			// dividing by 10 to scale distance down a bit
-			uvWorldPosition.z = -1 * (hit.transform.position - sceneCamera.transform.position).magnitude / 10;
+			// dividing by 20 to scale distance down a bit (to reduce pixellation of brushobject sprites)
+			uvWorldPosition.z = -1 * (hit.transform.position - sceneCamera.transform.position).magnitude / 20;
 
 			return true;
 		} else {		
@@ -170,7 +171,7 @@ public class TexturePainter : MonoBehaviour
 	public void SetBrushSize (float newBrushSize)
 	{ //Sets the size of the cursor brush or decal
 		brushSize = newBrushSize;
-		brushCursor.transform.localScale = Vector3.one * brushSize;
+		brushCursor.transform.localScale = Vector3.one * brushSize * BRUSH_SCALER;
 	}
 
 	////////////////// OPTIONAL METHODS //////////////////
