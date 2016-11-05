@@ -41,11 +41,14 @@ public class TexturePainter : MonoBehaviour
 	{
 		Slider sizeSlider = GameObject.Find ("SliderSize").GetComponent <Slider> ();
 		brushSize = sizeSlider.value;
+
+		ExampleColorReceiver colorPickerManager = GameObject.Find ("ColorPicker").GetComponent<ExampleColorReceiver> ();
+		brushColor = colorPickerManager.getColor ();
 	}
 
 	void Update ()
 	{
-		brushColor = ColorSelector.GetColor ();	//Updates our painted color with the selected color
+//		brushColor = ColorSelector.GetColor ();	//Updates our painted color with the selected color
 		if (Input.GetMouseButton (0)) {
 			DoAction ();
 		}
@@ -175,4 +178,11 @@ public class TexturePainter : MonoBehaviour
 		yield return null;
 	}
 	#endif
+
+	// #hacky way of propagating color changes to this class
+	public void OnColorChange (HSBColor color)
+	{
+		brushColor = color.ToColor ();
+	}
+
 }
