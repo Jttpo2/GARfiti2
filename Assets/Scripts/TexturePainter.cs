@@ -35,7 +35,14 @@ public class TexturePainter : MonoBehaviour
 	//Flag to check if we are saving the texture
 
 	string brushFileLocation = "TexturePainter-Instances/BrushEntity";
+	// To accomodate canvas scale changes
 	const float BRUSH_SCALER = 1.0f;
+
+	// To be able to interpolate between touch ponts, for continuous lines
+	Vector3 previousPaintPoint = Vector3.zero;
+	// Interpolation smoothess factor
+	const float SMOOTHNESS = 3.0f;
+
 
 	void Start ()
 	{
@@ -51,8 +58,11 @@ public class TexturePainter : MonoBehaviour
 //		brushColor = ColorSelector.GetColor ();	//Updates our painted color with the selected color
 		if (Input.GetMouseButton (0)) {
 			DoAction ();
+		} else if (Input.GetMouseButtonUp (0)) {
+			// Reset painting location on mouse up
+			previousPaintPoint = Vector3.zero;
 		}
-	
+			
 		if (Constants.compilingForDesktop ()) {
 			UpdateBrushCursor ();	
 		}
@@ -66,26 +76,48 @@ public class TexturePainter : MonoBehaviour
 			return;
 		Vector3 uvWorldPosition = Vector3.zero;		
 		if (HitTestUVPosition (ref uvWorldPosition)) {
-			GameObject brushObj;
-
-			brushObj = (GameObject)Instantiate (Resources.Load (brushFileLocation)); //Paint a brush
-			brushObj.GetComponent<SpriteRenderer> ().color = brushColor; //Set the brush color
-
-			brushColor.a = brushSize * 2.0f * BRUSH_SCALER; // Brushes have alpha to have a merging effect when painted over.
-			brushObj.transform.parent = brushContainer.transform; //Add the brush to our container to be wiped later
-			brushObj.transform.localPosition = uvWorldPosition; //The position of the brush (in the UVMap)
-			brushObj.transform.localScale = Vector3.one * brushSize;//The size of the brush
-			brushObj.transform.localScale *= (-1 * uvWorldPosition.z) * BRUSH_SCALER; // Scale with distance to canvas
-			brushObj.transform.localPosition = new Vector3 (brushObj.transform.localPosition.x, brushObj.transform.localPosition.y, 0.0f); // Flatten positions to enable overpainting
+			// Don't interpolate if the brush is not on the canvas (when the position is set to zero)
+			if (previousPaintPoint != Vector3.zero) {
+				Vector3[] interpolatedPoints = interpolateBetweenPoints (previousPaintPoint, uvWorldPosition);
+				foreach (Vector3 point in interpolatedPoints) {
+					paintAt (point);	
+				}
+			} else {
+				paintAt (uvWorldPosition);
+			}
+			previousPaintPoint = uvWorldPosition;
 		}
-		brushCounter++; //Add to the max brushes
 		if (brushCounter >= MAX_BRUSH_COUNT) { //If we reach the max brushes available, flatten the texture and clear the brushes
 			brushCursor.SetActive (false);
 			saving = true;
 			Invoke ("SaveTexture", 0.1f);
-			
 		}
 	}
+
+	private Vector3[] interpolateBetweenPoints (Vector3 start, Vector3 end)
+	{
+		Vector3[] vectorArray = { start, end };
+		return Curver.MakeSmoothCurve (vectorArray, SMOOTHNESS);
+	}
+
+	// Put a colored dot at the specified world coordinate
+	private void paintAt (Vector3 uvWorldPosition)
+	{
+		GameObject brushObj;
+
+		brushObj = (GameObject)Instantiate (Resources.Load (brushFileLocation)); //Paint a brush
+		brushObj.GetComponent<SpriteRenderer> ().color = brushColor; //Set the brush color
+
+		brushColor.a = brushSize * 2.0f * BRUSH_SCALER; // Brushes have alpha to have a merging effect when painted over.
+		brushObj.transform.parent = brushContainer.transform; //Add the brush to our container to be wiped later
+		brushObj.transform.localPosition = uvWorldPosition; //The position of the brush (in the UVMap)
+		brushObj.transform.localScale = Vector3.one * brushSize;//The size of the brush
+		brushObj.transform.localScale *= (-1 * uvWorldPosition.z) * BRUSH_SCALER; // Scale with distance to canvas
+		brushObj.transform.localPosition = new Vector3 (brushObj.transform.localPosition.x, brushObj.transform.localPosition.y, 0.0f); // Flatten positions to enable overpainting
+
+		brushCounter++; //Add to the max brushes
+	}
+
 	//To update at realtime the painting cursor on the mesh
 	void UpdateBrushCursor ()
 	{
