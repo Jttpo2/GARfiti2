@@ -12,30 +12,37 @@ using System.Collections;
 public class TexturePainter : MonoBehaviour
 {
 	
-
-	public GameObject brushCursor, brushContainer;
 	//The cursor that overlaps the model and our container for the brushes painted
-	public Camera sceneCamera, canvasCam;
+	public GameObject brushCursor, brushContainer;
 	//The camera that looks at the model, and the camera that looks at the canvas.
-	public Sprite cursorPaint;
+	public Camera sceneCamera, canvasCam;
 	// Cursor for the differen functions
-	public RenderTexture canvasTexture;
+	public Sprite cursorPaint;
 	// Render Texture that looks at our Base Texture and the painted brushes
-	public Material baseMaterial;
+	public RenderTexture canvasTexture;
 	// The material of our base texture (Were we will save the painted texture)
+	public Material baseMaterial;
 
-	float brushSize = 1.0f;
+	// The size of our brush
 	// Set on init by slider
-	//The size of our brush
-	Color brushColor;
+	float brushSize = 1.0f;
 	//The selected color
-	int brushCounter = 0, MAX_BRUSH_COUNT = 1000;
+	Color brushColor;
 	//To avoid having millions of brushes
-	bool saving = false;
+	int brushCounter = 0, MAX_BRUSH_COUNT = 1000;
 	//Flag to check if we are saving the texture
+	bool saving = false;
 
+	// File system location of brush sprite
 	string brushFileLocation = "TexturePainter-Instances/BrushEntity";
+	// To accomodate canvas scale changes
 	const float BRUSH_SCALER = 1.0f;
+
+	// To be able to interpolate between touch ponts, for continuous lines
+	Vector3 previousPaintPoint = Vector3.zero;
+	// Interpolation smoothess factor
+	const float SMOOTHNESS = 80.0f;
+
 
 	void Start ()
 	{
@@ -51,12 +58,14 @@ public class TexturePainter : MonoBehaviour
 //		brushColor = ColorSelector.GetColor ();	//Updates our painted color with the selected color
 		if (Input.GetMouseButton (0)) {
 			DoAction ();
+		} else if (Input.GetMouseButtonUp (0)) {
+			// Reset painting location on mouse up
+			previousPaintPoint = Vector3.zero;
 		}
-	
+			
 		if (Constants.compilingForDesktop ()) {
 			UpdateBrushCursor ();	
 		}
-	
 	}
 
 	//The main action, instantiates a brush or decal entity at the clicked position on the UV map
@@ -66,26 +75,51 @@ public class TexturePainter : MonoBehaviour
 			return;
 		Vector3 uvWorldPosition = Vector3.zero;		
 		if (HitTestUVPosition (ref uvWorldPosition)) {
-			GameObject brushObj;
-
-			brushObj = (GameObject)Instantiate (Resources.Load (brushFileLocation)); //Paint a brush
-			brushObj.GetComponent<SpriteRenderer> ().color = brushColor; //Set the brush color
-
-			brushColor.a = brushSize * 2.0f * BRUSH_SCALER; // Brushes have alpha to have a merging effect when painted over.
-			brushObj.transform.parent = brushContainer.transform; //Add the brush to our container to be wiped later
-			brushObj.transform.localPosition = uvWorldPosition; //The position of the brush (in the UVMap)
-			brushObj.transform.localScale = Vector3.one * brushSize;//The size of the brush
-			brushObj.transform.localScale *= (-1 * uvWorldPosition.z) * BRUSH_SCALER; // Scale with distance to canvas
-			brushObj.transform.localPosition = new Vector3 (brushObj.transform.localPosition.x, brushObj.transform.localPosition.y, 0.0f); // Flatten positions to enable overpainting
+			// Don't interpolate if the brush is not on the canvas (when the position is set to zero)
+			if (previousPaintPoint != Vector3.zero) {
+				Vector3[] interpolatedPoints = interpolateBetweenPoints (previousPaintPoint, uvWorldPosition);
+				foreach (Vector3 point in interpolatedPoints) {
+					paintAt (point);	
+				}
+			} else {
+				paintAt (uvWorldPosition);
+			}
+			previousPaintPoint = uvWorldPosition;
 		}
-		brushCounter++; //Add to the max brushes
 		if (brushCounter >= MAX_BRUSH_COUNT) { //If we reach the max brushes available, flatten the texture and clear the brushes
 			brushCursor.SetActive (false);
 			saving = true;
 			Invoke ("SaveTexture", 0.1f);
-			
 		}
 	}
+
+	private Vector3[] interpolateBetweenPoints (Vector3 start, Vector3 end)
+	{
+		Vector3[] vectorArray = { start, end };
+		// Scale the smoothness with framerate, adding more points when framerate is low
+		// TODO: Using Curver class might be unnecessarily computationally heavy, since we are not using it to round corners anyway
+		// better with simple lerp?
+		return Curver.MakeSmoothCurve (vectorArray, SMOOTHNESS * Time.deltaTime);
+	}
+
+	// Put a colored dot at the specified world coordinate
+	private void paintAt (Vector3 uvWorldPosition)
+	{
+		GameObject brushObj;
+
+		brushObj = (GameObject)Instantiate (Resources.Load (brushFileLocation)); //Paint a brush
+		brushObj.GetComponent<SpriteRenderer> ().color = brushColor; //Set the brush color
+
+		brushColor.a = brushSize * 2.0f * BRUSH_SCALER; // Brushes have alpha to have a merging effect when painted over.
+		brushObj.transform.parent = brushContainer.transform; //Add the brush to our container to be wiped later
+		brushObj.transform.localPosition = uvWorldPosition; //The position of the brush (in the UVMap)
+		brushObj.transform.localScale = Vector3.one * brushSize;//The size of the brush
+		brushObj.transform.localScale *= (-1 * uvWorldPosition.z) * BRUSH_SCALER; // Scale with distance to canvas
+		brushObj.transform.localPosition = new Vector3 (brushObj.transform.localPosition.x, brushObj.transform.localPosition.y, 0.0f); // Flatten positions to enable overpainting
+
+		brushCounter++; //Add to the max brushes
+	}
+
 	//To update at realtime the painting cursor on the mesh
 	void UpdateBrushCursor ()
 	{
@@ -185,5 +219,4 @@ public class TexturePainter : MonoBehaviour
 	{
 		brushColor = color.ToColor ();
 	}
-
 }
