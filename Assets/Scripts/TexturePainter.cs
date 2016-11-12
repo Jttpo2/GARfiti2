@@ -41,7 +41,7 @@ public class TexturePainter : MonoBehaviour
 	// To be able to interpolate between touch ponts, for continuous lines
 	Vector3 previousPaintPoint = Vector3.zero;
 	// Interpolation smoothess factor
-	const float SMOOTHNESS = 3.0f;
+	const float SMOOTHNESS = 80.0f;
 
 
 	void Start ()
@@ -97,7 +97,8 @@ public class TexturePainter : MonoBehaviour
 	private Vector3[] interpolateBetweenPoints (Vector3 start, Vector3 end)
 	{
 		Vector3[] vectorArray = { start, end };
-		return Curver.MakeSmoothCurve (vectorArray, SMOOTHNESS);
+		// Scale the smoothness with framerate, adding more points when framerate is low
+		return Curver.MakeSmoothCurve (vectorArray, SMOOTHNESS * Time.deltaTime);
 	}
 
 	// Put a colored dot at the specified world coordinate
@@ -217,5 +218,4 @@ public class TexturePainter : MonoBehaviour
 	{
 		brushColor = color.ToColor ();
 	}
-
 }
