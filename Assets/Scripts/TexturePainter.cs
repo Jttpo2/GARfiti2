@@ -12,28 +12,28 @@ using System.Collections;
 public class TexturePainter : MonoBehaviour
 {
 	
-
-	public GameObject brushCursor, brushContainer;
 	//The cursor that overlaps the model and our container for the brushes painted
-	public Camera sceneCamera, canvasCam;
+	public GameObject brushCursor, brushContainer;
 	//The camera that looks at the model, and the camera that looks at the canvas.
-	public Sprite cursorPaint;
+	public Camera sceneCamera, canvasCam;
 	// Cursor for the differen functions
-	public RenderTexture canvasTexture;
+	public Sprite cursorPaint;
 	// Render Texture that looks at our Base Texture and the painted brushes
-	public Material baseMaterial;
+	public RenderTexture canvasTexture;
 	// The material of our base texture (Were we will save the painted texture)
+	public Material baseMaterial;
 
-	float brushSize = 1.0f;
+	// The size of our brush
 	// Set on init by slider
-	//The size of our brush
-	Color brushColor;
+	float brushSize = 1.0f;
 	//The selected color
-	int brushCounter = 0, MAX_BRUSH_COUNT = 1000;
+	Color brushColor;
 	//To avoid having millions of brushes
-	bool saving = false;
+	int brushCounter = 0, MAX_BRUSH_COUNT = 1000;
 	//Flag to check if we are saving the texture
+	bool saving = false;
 
+	// File system location of brush sprite
 	string brushFileLocation = "TexturePainter-Instances/BrushEntity";
 	// To accomodate canvas scale changes
 	const float BRUSH_SCALER = 1.0f;
@@ -66,7 +66,6 @@ public class TexturePainter : MonoBehaviour
 		if (Constants.compilingForDesktop ()) {
 			UpdateBrushCursor ();	
 		}
-	
 	}
 
 	//The main action, instantiates a brush or decal entity at the clicked position on the UV map
@@ -98,6 +97,8 @@ public class TexturePainter : MonoBehaviour
 	{
 		Vector3[] vectorArray = { start, end };
 		// Scale the smoothness with framerate, adding more points when framerate is low
+		// TODO: Using Curver class might be unnecessarily computationally heavy, since we are not using it to round corners anyway
+		// better with simple lerp?
 		return Curver.MakeSmoothCurve (vectorArray, SMOOTHNESS * Time.deltaTime);
 	}
 
