@@ -7,6 +7,7 @@
 
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 using System.Collections;
 
 public class TexturePainter : MonoBehaviour
@@ -29,12 +30,12 @@ public class TexturePainter : MonoBehaviour
 	//The selected color
 	Color brushColor;
 	//To avoid having millions of brushes
-	int brushCounter = 0, MAX_BRUSH_COUNT = 1000;
+	int brushCounter = 0, MAX_BRUSH_COUNT = 100;
 	//Flag to check if we are saving the texture
 	bool saving = false;
 
 	// File system location of brush sprite
-	string brushFileLocation = "TexturePainter-Instances/BrushEntity";
+	string brushFileLocation = "TexturePainter-Instances" + Path.DirectorySeparatorChar + "BrushEntity";
 	// To accomodate canvas scale changes
 	const float BRUSH_SCALER = 1.0f;
 
@@ -179,7 +180,7 @@ public class TexturePainter : MonoBehaviour
 		foreach (Transform child in brushContainer.transform) {//Clear brushes
 			Destroy (child.gameObject);
 		}
-		//StartCoroutine ("SaveTextureToFile"); //Do you want to save the texture? This is your method!
+		StartCoroutine ("SaveTextureToFile", tex); //Do you want to save the texture? This is your method!
 		Invoke ("ShowCursor", 0.1f);
 	}
 	//Show again the user cursor (To avoid saving it to the texture)
@@ -202,7 +203,8 @@ public class TexturePainter : MonoBehaviour
 		IEnumerator SaveTextureToFile (Texture2D savedTexture)
 	{		
 		brushCounter = 0;
-		string fullPath = System.IO.Directory.GetCurrentDirectory () + "\\UserCanvas\\";
+		string fullPath = System.IO.Directory.GetCurrentDirectory () + Path.DirectorySeparatorChar + "UserCanvas" + Path.DirectorySeparatorChar;
+		Debug.Log (fullPath);
 		System.DateTime date = System.DateTime.Now;
 		string fileName = "CanvasTexture.png";
 		if (!System.IO.Directory.Exists (fullPath))
