@@ -156,12 +156,20 @@ public class TexturePainter : MonoBehaviour
 				return false;			
 			Vector2 pixelUV = hit.textureCoord;
 
+
+
 			float sizeCorrection = canvasCam.orthographicSize * 2;
 			uvWorldPosition.x = (pixelUV.x - canvasCam.orthographicSize / sizeCorrection);//To center the UV on X
 			uvWorldPosition.y = (pixelUV.y - canvasCam.orthographicSize / sizeCorrection);//To center the UV on Y
 
 			uvWorldPosition.x *= canvasCam.orthographicSize * 2; // Map to camera size
 			uvWorldPosition.y *= canvasCam.orthographicSize * 2; // Map to camera size
+
+			// Scale touch position with canvas width
+			float canvasRatio = canvasTexture.width / canvasTexture.height;
+//			float canvasRatio2 = canvasTexture.height / canvasTexture.width; // Necessary when height larger than width?
+			uvWorldPosition.x *= canvasRatio;
+//			uvWorldPosition.y *= canvasRatio2;
 
 //			uvWorldPosition.z = 0.0f;
 			// Distance between camera and ray hit on canvas
