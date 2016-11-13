@@ -44,6 +44,11 @@ public class TexturePainter : MonoBehaviour
 	// Interpolation smoothess factor
 	const float SMOOTHNESS = 20.0f;
 
+	// Canvas file path
+	string canvasPath = System.IO.Directory.GetCurrentDirectory () + Path.DirectorySeparatorChar + "UserCanvas" + Path.DirectorySeparatorChar;
+	// Saved canvas file name
+	string canvasFileName = "CanvasTexture.png";
+
 
 	void Start ()
 	{
@@ -52,6 +57,9 @@ public class TexturePainter : MonoBehaviour
 
 		ExampleColorReceiver colorPickerManager = GameObject.Find ("ColorPicker").GetComponent<ExampleColorReceiver> ();
 		brushColor = colorPickerManager.getColor ();
+
+		// Load texture from disk
+		StartCoroutine ("LoadTextureFromFile");
 	}
 
 	void Update ()
@@ -183,10 +191,10 @@ public class TexturePainter : MonoBehaviour
 		float scale = 25.0f; // Not sure the reason for this exact value. Other values give weird square effects.
 		baseMaterial.mainTextureScale = new Vector2 (scale, scale);
 
-		foreach (Transform child in brushContainer.transform) {//Clear brushes
+		foreach (Transform child in brushContainer.transform) {// Clear brushes
 			Destroy (child.gameObject);
 		}
-		StartCoroutine ("SaveTextureToFile", tex); //Do you want to save the texture? This is your method!
+		StartCoroutine ("SaveTextureToFile", tex); // Save the texture to disk
 		Invoke ("ShowCursor", 0.1f);
 	}
 	//Show again the user cursor (To avoid saving it to the texture)
@@ -209,15 +217,32 @@ public class TexturePainter : MonoBehaviour
 		IEnumerator SaveTextureToFile (Texture2D savedTexture)
 	{		
 		brushCounter = 0;
-		string fullPath = System.IO.Directory.GetCurrentDirectory () + Path.DirectorySeparatorChar + "UserCanvas" + Path.DirectorySeparatorChar;
-		Debug.Log (fullPath);
 		System.DateTime date = System.DateTime.Now;
-		string fileName = "CanvasTexture.png";
-		if (!System.IO.Directory.Exists (fullPath))
-			System.IO.Directory.CreateDirectory (fullPath);
+		if (!System.IO.Directory.Exists (canvasPath))
+			System.IO.Directory.CreateDirectory (canvasPath);
 		var bytes = savedTexture.EncodeToPNG ();
-		System.IO.File.WriteAllBytes (fullPath + fileName, bytes);
-		Debug.Log ("<color=orange>Saved Successfully!</color>" + fullPath + fileName);
+		System.IO.File.WriteAllBytes (canvasPath + canvasFileName, bytes);
+		Debug.Log ("<color=orange>Saved Successfully!</color>" + canvasPath + canvasFileName);
+		yield return null;
+	}
+	#endif
+
+	#if !UNITY_WEBPLAYER
+	IEnumerator LoadTextureFromFile ()
+	{		
+//		brushCounter = 0;
+//		System.DateTime date = System.DateTime.Now;
+
+//		if (!System.IO.Directory.Exists (canvasPath))
+//			System.IO.Directory.CreateDirectory (canvasPath);
+//		var bytes = savedTexture.EncodeToPNG ();
+//		System.IO.File.WriteAllBytes (fullPath + fileName, bytes);
+
+		byte[] canvasBytes = System.IO.File.ReadAllBytes (canvasPath + canvasFileName);
+		Texture2D canvas = new Texture2D (canvasTexture.width, canvasTexture.height);
+		canvas.LoadImage (canvasBytes);
+		baseMaterial.mainTexture = canvas;
+		Debug.Log ("<color=orange>Loaded Successfully!</color>" + canvasPath + canvasFileName);
 		yield return null;
 	}
 	#endif
