@@ -42,7 +42,7 @@ public class TexturePainter : MonoBehaviour
 	// To be able to interpolate between touch ponts, for continuous lines
 	Vector3 previousPaintPoint = Vector3.zero;
 	// Interpolation smoothess factor
-	const float SMOOTHNESS = 20.0f;
+	const float SMOOTHNESS = 80.0f;
 
 	// Canvas file path
 	string canvasPath = System.IO.Directory.GetCurrentDirectory () + Path.DirectorySeparatorChar + "UserCanvas" + Path.DirectorySeparatorChar;
