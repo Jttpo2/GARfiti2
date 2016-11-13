@@ -174,6 +174,23 @@ public class TexturePainter : MonoBehaviour
 		}
 	}
 
+	// Replaces the canvas with a fresh one
+	public void resetCanvas ()
+	{
+		clearBrushes ();
+		Texture2D tex = new Texture2D (canvasTexture.width, canvasTexture.height, TextureFormat.RGB24, false);		
+		baseMaterial.mainTexture = tex;
+
+	}
+
+	// Deletes all brush strokes not yet merged with the canvas
+	private void clearBrushes ()
+	{
+		foreach (Transform child in brushContainer.transform) {// Clear brushes
+			Destroy (child.gameObject);
+		}
+	}
+
 	//Sets the base material with a our canvas texture, then removes all our brushes
 	void SaveTexture ()
 	{		
@@ -191,9 +208,8 @@ public class TexturePainter : MonoBehaviour
 		float scale = 25.0f; // Not sure the reason for this exact value. Other values give weird square effects.
 		baseMaterial.mainTextureScale = new Vector2 (scale, scale);
 
-		foreach (Transform child in brushContainer.transform) {// Clear brushes
-			Destroy (child.gameObject);
-		}
+		clearBrushes ();
+
 		StartCoroutine ("SaveTextureToFile", tex); // Save the texture to disk
 		Invoke ("ShowCursor", 0.1f);
 	}
@@ -246,6 +262,8 @@ public class TexturePainter : MonoBehaviour
 		yield return null;
 	}
 	#endif
+
+
 
 	// #hacky way of propagating color changes to this class
 	public void OnColorChange (HSBColor color)
