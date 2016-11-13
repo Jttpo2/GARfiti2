@@ -59,7 +59,7 @@ public class TexturePainter : MonoBehaviour
 		brushColor = colorPickerManager.getColor ();
 
 		// Load texture from disk
-		StartCoroutine ("LoadTextureFromFile");
+//		StartCoroutine ("LoadTextureFromFile");
 	}
 
 	void Update ()
@@ -178,7 +178,7 @@ public class TexturePainter : MonoBehaviour
 	public void resetCanvas ()
 	{
 		clearBrushes ();
-		Texture2D tex = new Texture2D (canvasTexture.width, canvasTexture.height, TextureFormat.RGB24, false);		
+		Texture2D tex = new Texture2D (canvasTexture.width, canvasTexture.height, TextureFormat.ARGB32, false);		
 		baseMaterial.mainTexture = tex;
 
 	}
@@ -197,7 +197,7 @@ public class TexturePainter : MonoBehaviour
 		brushCounter = 0;
 		System.DateTime date = System.DateTime.Now;
 		RenderTexture.active = canvasTexture;
-		Texture2D tex = new Texture2D (canvasTexture.width, canvasTexture.height, TextureFormat.RGB24, false);		
+		Texture2D tex = new Texture2D (canvasTexture.width, canvasTexture.height, TextureFormat.ARGB32, false);		
 		tex.ReadPixels (new Rect (0, 0, canvasTexture.width, canvasTexture.height), 0, 0);
 		tex.Apply ();
 		RenderTexture.active = null;
