@@ -59,7 +59,7 @@ public class TexturePainter : MonoBehaviour
 		brushColor = colorPickerManager.getColor ();
 
 		// Load texture from disk
-//		StartCoroutine ("LoadTextureFromFile");
+		StartCoroutine ("LoadTextureFromFile");
 	}
 
 	void Update ()
@@ -177,6 +177,7 @@ public class TexturePainter : MonoBehaviour
 	// Replaces the canvas with a fresh one
 	public void resetCanvas ()
 	{
+		Debug.Log ("Resetting canvas");
 		clearBrushes ();
 		Texture2D tex = new Texture2D (canvasTexture.width, canvasTexture.height, TextureFormat.ARGB32, false);		
 		baseMaterial.mainTexture = tex;
@@ -205,8 +206,8 @@ public class TexturePainter : MonoBehaviour
 
 		// Put this at 20.5f, 20.5f for cool square doubling effect
 		// 26.1, 26.1 cool
-		float scale = 25.0f; // Not sure the reason for this exact value. Other values give weird square effects.
-		baseMaterial.mainTextureScale = new Vector2 (scale, scale);
+//		float scale = 25.0f; // Not sure the reason for this exact value. Other values give weird square effects.
+//		baseMaterial.mainTextureScale = new Vector2 (scale, scale);
 
 		clearBrushes ();
 
