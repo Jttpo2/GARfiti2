@@ -42,7 +42,7 @@ public class TexturePainter : MonoBehaviour
 	// To be able to interpolate between touch ponts, for continuous lines
 	Vector3 previousPaintPoint = Vector3.zero;
 	// Interpolation smoothess factor
-	const float SMOOTHNESS = 80.0f;
+	const float SMOOTHNESS = 20.0f;
 
 
 	void Start ()
@@ -177,6 +177,12 @@ public class TexturePainter : MonoBehaviour
 		tex.Apply ();
 		RenderTexture.active = null;
 		baseMaterial.mainTexture = tex;	//Put the painted texture as the base
+
+		// Put this at 20.5f, 20.5f for cool square doubling effect
+		// 26.1, 26.1 cool
+		float scale = 25.0f; // Not sure the reason for this exact value. Other values give weird square effects.
+		baseMaterial.mainTextureScale = new Vector2 (scale, scale);
+
 		foreach (Transform child in brushContainer.transform) {//Clear brushes
 			Destroy (child.gameObject);
 		}
